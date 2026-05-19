@@ -47,6 +47,7 @@ namespace Utils.SceneLoader
                 float progress = Mathf.Clamp01(asyncOp.progress / 0.9f);
                 _loadindScreen.SetLoadingProgress(progress);
                 _progressUpdated.OnNext(progress);
+
                 await UniTask.Yield(PlayerLoopTiming.Update, token);
             }
 

@@ -1,7 +1,14 @@
 ﻿using Common;
+
+using Core.GlobalState;
+using Core.StateMachine;
+using Core.StateMachine.States;
 using Cysharp.Threading.Tasks;
+
 using SO.Global;
+
 using System;
+using System.Linq;
 
 using UnityEngine;
 
@@ -13,12 +20,11 @@ namespace Entry.Global
 {
     public class GameEntryPoint
     {
-        private static GameEntryPoint _instance;
-
         private readonly DIContainer _rootContainer = new();
-        private readonly AssetsPathsConfig _assetsPathsConfig;
+        private readonly AssetPathsConfig _assetPathsConfig;
 
         private readonly SceneNavigatorService _sceneNavigatorService;
+        private readonly GameStateMachine _stateMachine;
 
         private readonly UILoadingView _loadingView;
 
@@ -28,33 +34,31 @@ namespace Entry.Global
             Application.targetFrameRate = 60;
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
 
-            _instance = new GameEntryPoint();
-
             RunAsync().Forget();
-
-#if UNITY_ANDROID
-            Application.quitting += HandleApplicationQuit;
-#endif
         }
 
         private GameEntryPoint()
         {
-            _assetsPathsConfig = ResourceLoader.LoadOrThrow<AssetsPathsConfig>("Configs/Global/AssetsPathsConfig");
-            var loadingViewPrefab = ResourceLoader.LoadOrThrow<UILoadingView>("UI/Common/UILoadingView");
+            _assetPathsConfig = ResourceLoader.LoadOrThrow<AssetPathsConfig>("Configs/Global/AssetPathsConfig");
+            var loadingViewPrefab = ResourceLoader.LoadOrThrow<UILoadingView>(_assetPathsConfig.AssetPaths.FirstOrDefault(asset => asset.Name == "UI Loading View").Path);
 
             _loadingView = UnityEngine.Object.Instantiate(loadingViewPrefab);
 
             RegisterGlobalServices();
 
-            var sls = _rootContainer.Resolve<SceneLoaderService>();
-            _sceneNavigatorService = new(sls, _rootContainer);
+            _sceneNavigatorService = _rootContainer.Resolve<SceneNavigatorService>();
+            _stateMachine = _rootContainer.Resolve<GameStateMachine>();
+
+            RegisterStates();
         }
 
         private static async UniTask RunAsync()
         {
+            var entryPoint = new GameEntryPoint();
+
             try
             {
-                await _instance.Run();
+                await entryPoint.Run();
             }
             catch (Exception ex)
             {
@@ -64,25 +68,27 @@ namespace Entry.Global
 
         private async UniTask Run()
         {
-            _sceneNavigatorService.Start();
+            var globalGameState = _rootContainer.Resolve<GlobalGameState>();
+
+            await globalGameState.AsyncInitialization();
+            _stateMachine.ChangeState(_rootContainer.Resolve<BootstrapState>());
         }
 
         private void RegisterGlobalServices()
         {
             _rootContainer.RegisterInstance(_loadingView);
-            _rootContainer.RegisterInstance(_assetsPathsConfig);
+            _rootContainer.RegisterInstance(_assetPathsConfig);
 
-            var loadingView = _rootContainer.Resolve<UILoadingView>();
-            _rootContainer.RegisterFactory(sls => new SceneLoaderService(loadingView)).AsSingle();
+            _rootContainer.RegisterFactory(sls => new SceneLoaderService(sls.Resolve<UILoadingView>())).AsSingle();
+            _rootContainer.RegisterFactory(ggs => new GlobalGameState(_assetPathsConfig)).AsSingle();
+            _rootContainer.RegisterFactory(gsm => new GameStateMachine()).AsSingle();
+            _rootContainer.RegisterFactory(sns => new SceneNavigatorService(_rootContainer.Resolve<SceneLoaderService>(), _rootContainer)).AsSingle();
         }
 
-#if UNITY_ANDROID
-        private static void HandleApplicationQuit()
+        private void RegisterStates()
         {
-            //_instance._rootContainer.Resolve<GameWorldState>().Dispose();
-            _instance._sceneNavigatorService.Dispose();
-            _instance._rootContainer.Dispose();
+            _rootContainer.RegisterFactory(bs => new BootstrapState(_sceneNavigatorService)).AsSingle();
+            _rootContainer.RegisterFactory(mms => new MainMenuState()).AsSingle();
         }
-#endif
     }
 }

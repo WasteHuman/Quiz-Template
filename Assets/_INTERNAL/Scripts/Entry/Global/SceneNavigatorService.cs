@@ -1,5 +1,6 @@
-﻿using R3;
-
+﻿using Entry.Local.MainMenu;
+using R3;
+using UnityEngine;
 using Utils.DI;
 using Utils.SceneLoader;
 
@@ -33,7 +34,7 @@ namespace Entry.Global
 #endif
         }
 
-        public void Dispose() => _disposables.Clear();
+        public void Dispose() => _disposables.Dispose();
 
         private void LoadScene(string sceneName)
         {
@@ -47,6 +48,7 @@ namespace Entry.Global
                 .AddTo(_disposables);
 
             _sceneLoaderService.LoadScene(sceneName);
+            //_disposables.Clear();
         }
 
         private void OnSceneLoaded(string sceneName)
@@ -68,6 +70,13 @@ namespace Entry.Global
         private void CreateMainMenuScene()
         {
             var container = _cachedContainer = new(_rootContainer);
+
+            var entryPoint = Object.FindAnyObjectByType<MainMenuEntryPoint>();
+
+            entryPoint
+                .Run(container)
+                .Subscribe(_ => LoadScene(SceneNames.GAME))
+                .AddTo(_disposables);
         }
 
         private void CreateGameScene()

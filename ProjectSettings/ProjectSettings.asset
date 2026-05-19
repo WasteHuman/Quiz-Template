@@ -8,7 +8,7 @@ PlayerSettings:
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
-  defaultScreenOrientation: 4
+  defaultScreenOrientation: 0
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
@@ -56,7 +56,7 @@ PlayerSettings:
   numberOfMipsStrippedPerMipmapLimitGroup: {}
   m_StackTraceTypes: 010000000100000001000000010000000100000001000000
   iosShowActivityIndicatorOnLoading: -1
-  androidShowActivityIndicatorOnLoading: -1
+  androidShowActivityIndicatorOnLoading: 0
   iosUseCustomAppBackgroundBehavior: 0
   allowedAutorotateToPortrait: 1
   allowedAutorotateToPortraitUpsideDown: 1
@@ -74,8 +74,8 @@ PlayerSettings:
   androidResizeableActivity: 1
   androidDefaultWindowWidth: 1920
   androidDefaultWindowHeight: 1080
-  androidMinimumWindowWidth: 400
-  androidMinimumWindowHeight: 300
+  androidMinimumWindowWidth: 800
+  androidMinimumWindowHeight: 600
   androidFullscreenMode: 1
   androidAutoRotationBehavior: 1
   androidPredictiveBackSupport: 0
@@ -778,7 +778,9 @@ PlayerSettings:
   webGLCloseOnQuit: 0
   webWasm2023: 0
   webEnableSubmoduleStrippingCompatibility: 0
-  scriptingDefineSymbols: {}
+  scriptingDefineSymbols:
+    Android: 
+    iPhone: 
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:
