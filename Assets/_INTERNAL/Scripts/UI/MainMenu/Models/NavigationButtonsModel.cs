@@ -32,7 +32,9 @@ namespace UI.MainMenu.Models
         public void ExitButton()
         {
             _actionSubject.OnNext(MainMenuActions.Exit);
+#if UNITY_ANDROID
             Application.Quit();
+#endif
         }
 
         public void Dispose()

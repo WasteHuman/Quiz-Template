@@ -71,7 +71,7 @@ namespace Entry.Global
             var globalGameState = _rootContainer.Resolve<GlobalGameState>();
 
             await globalGameState.AsyncInitialization();
-            _stateMachine.ChangeState(_rootContainer.Resolve<BootstrapState>());
+            await _stateMachine.ChangeState(_rootContainer.Resolve<BootstrapState>());
         }
 
         private void RegisterGlobalServices()
@@ -79,16 +79,21 @@ namespace Entry.Global
             _rootContainer.RegisterInstance(_loadingView);
             _rootContainer.RegisterInstance(_assetPathsConfig);
 
-            _rootContainer.RegisterFactory(sls => new SceneLoaderService(sls.Resolve<UILoadingView>())).AsSingle();
-            _rootContainer.RegisterFactory(ggs => new GlobalGameState(_assetPathsConfig)).AsSingle();
-            _rootContainer.RegisterFactory(gsm => new GameStateMachine()).AsSingle();
-            _rootContainer.RegisterFactory(sns => new SceneNavigatorService(_rootContainer.Resolve<SceneLoaderService>(), _rootContainer)).AsSingle();
+            _rootContainer.RegisterFactory(
+                sls => new SceneLoaderService(sls.Resolve<UILoadingView>())).AsSingle();
+            _rootContainer.RegisterFactory(
+                ggs => new GlobalGameState(_assetPathsConfig)).AsSingle();
+            _rootContainer.RegisterFactory(
+                gsm => new GameStateMachine()).AsSingle();
+            _rootContainer.RegisterFactory(
+                sns => new SceneNavigatorService(sns.Resolve<SceneLoaderService>(), _rootContainer)).AsSingle();
         }
 
         private void RegisterStates()
         {
-            _rootContainer.RegisterFactory(bs => new BootstrapState(_sceneNavigatorService)).AsSingle();
-            _rootContainer.RegisterFactory(mms => new MainMenuState()).AsSingle();
+            _rootContainer.RegisterFactory(bs => new BootstrapState(_sceneNavigatorService, _stateMachine, _rootContainer)).AsSingle();
+            _rootContainer.RegisterFactory(ms => new MainMenuState(_sceneNavigatorService, _stateMachine, _rootContainer)).AsSingle();
+            _rootContainer.RegisterFactory(gs => new GameplayState(_sceneNavigatorService, _stateMachine, _rootContainer)).AsSingle();
         }
     }
 }

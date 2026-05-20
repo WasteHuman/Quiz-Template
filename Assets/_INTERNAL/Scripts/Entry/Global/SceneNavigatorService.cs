@@ -1,4 +1,5 @@
-﻿using Entry.Local.MainMenu;
+﻿using Cysharp.Threading.Tasks;
+using Entry.Local.Core;
 using R3;
 using UnityEngine;
 using Utils.DI;
@@ -17,17 +18,15 @@ namespace Entry.Global
         private readonly SceneLoaderService _sceneLoaderService;
         private readonly DIContainer _rootContainer;
 
-        private DIContainer _cachedContainer;
-
         public SceneNavigatorService(SceneLoaderService sceneLoaderService, DIContainer rootContainer)
         {
             _sceneLoaderService = sceneLoaderService;
             _rootContainer = rootContainer;
         }
 
-        public void Start()
+        public async UniTask Start()
         {
-            LoadScene(SceneNames.MAIN_MENU);
+            await LoadSceneAsync(SceneNames.MAIN_MENU);
 
 #if UNITY_WEBGL
             YG2.GameReadyAPI();
@@ -36,52 +35,12 @@ namespace Entry.Global
 
         public void Dispose() => _disposables.Dispose();
 
-        private void LoadScene(string sceneName)
+        public async UniTask LoadSceneAsync(string sceneName)
         {
-            _cachedContainer?.Dispose();
-            _cachedContainer = null;
+            await _sceneLoaderService.LoadSceneAsync(sceneName);
 
-            _sceneLoaderService
-                .OnSceneLoaded
-                .Take(1)
-                .Subscribe(_ => OnSceneLoaded(sceneName))
-                .AddTo(_disposables);
-
-            _sceneLoaderService.LoadScene(sceneName);
-            //_disposables.Clear();
-        }
-
-        private void OnSceneLoaded(string sceneName)
-        {
-            switch (sceneName)
-            {
-                case SceneNames.MAIN_MENU:
-                    CreateMainMenuScene();
-                    break;
-                case SceneNames.GAME:
-                    CreateGameScene();
-                    break;
-                default:
-                    CreateMainMenuScene();
-                    break;
-            }
-        }
-
-        private void CreateMainMenuScene()
-        {
-            var container = _cachedContainer = new(_rootContainer);
-
-            var entryPoint = Object.FindAnyObjectByType<MainMenuEntryPoint>();
-
-            entryPoint
-                .Run(container)
-                .Subscribe(_ => LoadScene(SceneNames.GAME))
-                .AddTo(_disposables);
-        }
-
-        private void CreateGameScene()
-        {
-            var container = _cachedContainer = new(_rootContainer);
+            var sceneContext = Object.FindAnyObjectByType<SceneContex>();
+            sceneContext.Initialize(_rootContainer);
         }
     }
 }

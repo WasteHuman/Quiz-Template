@@ -15,7 +15,13 @@ MonoBehaviour:
   <AssetPaths>k__BackingField:
   - Name: UI Loading View
     Path: UI/Common/UILoadingView
-  - Name: Main menu navitation view
+  - Name: UI Root
+    Path: UI/Common/UIRoot
+  - Name: Main menu buttons
     Path: UI/MainMenu/ButtonsBase
-  - Name: UI Main root view
-    Path: UI/MainMenu/UIMain
+  - Name: Main menu window
+    Path: UI/MainMenu/ScreenLayer
+  - Name: Popup window
+    Path: UI/MainMenu/PopupLayer
+  - Name: Overlay window
+    Path: UI/MainMenu/OverlayLayer

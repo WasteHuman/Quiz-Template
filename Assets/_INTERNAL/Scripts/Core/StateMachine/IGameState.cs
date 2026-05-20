@@ -1,8 +1,10 @@
-﻿namespace Core.StateMachine
+﻿using Cysharp.Threading.Tasks;
+
+namespace Core.StateMachine
 {
     public interface IGameState
     {
-        void Enter();
-        void Exit();    
+        UniTask Enter();
+        UniTask Exit();    
     }
 }

@@ -26,14 +26,14 @@ namespace Utils.SceneLoader
             _sceneLoaded = new Subject<string>();
         }
 
-        public void LoadScene(string sceneName)
+        public async UniTask LoadSceneAsync(string sceneName)
         {
             _cts?.Cancel();
             _cts?.Dispose();
             _cts = null;
 
             _cts = new();
-            LoadSceneRoutine(sceneName, _cts.Token).Forget();
+            await LoadSceneRoutine(sceneName, _cts.Token);
         }
 
         private async UniTask LoadSceneRoutine(string sceneName, CancellationToken token)
