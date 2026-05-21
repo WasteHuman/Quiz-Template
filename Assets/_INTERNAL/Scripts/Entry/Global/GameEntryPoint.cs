@@ -48,8 +48,6 @@ namespace Entry.Global
 
             _sceneNavigatorService = _rootContainer.Resolve<SceneNavigatorService>();
             _stateMachine = _rootContainer.Resolve<GameStateMachine>();
-
-            RegisterStates();
         }
 
         private static async UniTask RunAsync()
@@ -71,7 +69,7 @@ namespace Entry.Global
             var globalGameState = _rootContainer.Resolve<GlobalGameState>();
 
             await globalGameState.AsyncInitialization();
-            await _stateMachine.ChangeState(_rootContainer.Resolve<BootstrapState>());
+            await _stateMachine.ChangeState(_rootContainer.Resolve<StatesFactory>().CreateBootstrapState());
         }
 
         private void RegisterGlobalServices()
@@ -87,13 +85,9 @@ namespace Entry.Global
                 gsm => new GameStateMachine()).AsSingle();
             _rootContainer.RegisterFactory(
                 sns => new SceneNavigatorService(sns.Resolve<SceneLoaderService>(), _rootContainer)).AsSingle();
-        }
-
-        private void RegisterStates()
-        {
-            _rootContainer.RegisterFactory(bs => new BootstrapState(_sceneNavigatorService, _stateMachine, _rootContainer)).AsSingle();
-            _rootContainer.RegisterFactory(ms => new MainMenuState(_sceneNavigatorService, _stateMachine, _rootContainer)).AsSingle();
-            _rootContainer.RegisterFactory(gs => new GameplayState(_sceneNavigatorService, _stateMachine, _rootContainer)).AsSingle();
+            _rootContainer.RegisterFactory(sf => new StatesFactory(sf.Resolve<SceneNavigatorService>(),
+                sf.Resolve<GameStateMachine>(),
+                _rootContainer)).AsSingle();
         }
     }
 }

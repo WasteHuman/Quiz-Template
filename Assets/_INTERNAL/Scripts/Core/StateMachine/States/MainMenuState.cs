@@ -3,7 +3,6 @@
 using Entry.Global;
 
 using UnityEngine;
-using Utils.DI;
 
 namespace Core.StateMachine.States
 {
@@ -11,13 +10,13 @@ namespace Core.StateMachine.States
     {
         private readonly SceneNavigatorService _sceneNavigatorService;
         private readonly GameStateMachine _gameStateMachine;
-        private readonly DIContainer _rootContainer;
+        private readonly StatesFactory _statesFactory;
 
-        public MainMenuState(SceneNavigatorService sceneNavigatorService, GameStateMachine gameStateMachine, DIContainer rootContainer)
+        public MainMenuState(SceneNavigatorService sceneNavigatorService, GameStateMachine gameStateMachine, StatesFactory statesFactory)
         {
             _sceneNavigatorService = sceneNavigatorService;
             _gameStateMachine = gameStateMachine;
-            _rootContainer = rootContainer;
+            _statesFactory = statesFactory;
         }
 
         public UniTask Enter()
@@ -34,7 +33,7 @@ namespace Core.StateMachine.States
         public async UniTask StartGame()
         {
             await _sceneNavigatorService.LoadSceneAsync(SceneNames.GAME);
-            await _gameStateMachine.ChangeState(_rootContainer.Resolve<GameplayState>());
+            await _gameStateMachine.ChangeState(_statesFactory.CreateGameplayState());
         }
     }
 }

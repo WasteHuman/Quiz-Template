@@ -8,20 +8,20 @@ namespace Core.StateMachine.States
     {
         private readonly GameStateMachine _gameStateMachine;
         private readonly SceneNavigatorService _sceneNavigatorService;
-        private readonly DIContainer _rootContainer;
+        private readonly StatesFactory _statesFactory;
 
-        public BootstrapState(SceneNavigatorService sceneNavigatorService, GameStateMachine gameStateMachine, DIContainer rootContainer)
+        public BootstrapState(SceneNavigatorService sceneNavigatorService, GameStateMachine gameStateMachine, StatesFactory statesFactory)
         {
             _sceneNavigatorService = sceneNavigatorService;
             _gameStateMachine = gameStateMachine;
-            _rootContainer = rootContainer;
+            _statesFactory = statesFactory;
         }
 
         public async UniTask Enter()
         {
             await _sceneNavigatorService.Start();
 
-            await _gameStateMachine.ChangeState(_rootContainer.Resolve<MainMenuState>());
+            await _gameStateMachine.ChangeState(_statesFactory.CreateMainMenuState());
         }
 
         public UniTask Exit()

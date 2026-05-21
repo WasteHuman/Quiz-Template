@@ -1,4 +1,6 @@
-﻿using Core.StateMachine.States;
+﻿using Core.HandlersBase;
+using Core.StateMachine;
+using Core.StateMachine.States;
 
 using Entry.Local.Core;
 using Entry.Local.MainMenu;
@@ -29,13 +31,14 @@ namespace Core.Contexts
 
             container.RegisterFactory(c => new NavigationButtonsModel()).AsSingle();
             container.RegisterFactory(c => new NavigationButtonsViewModel()).AsSingle();
+            container.RegisterFactory<IMainMenuActionsHandler>(c => new MainMenuActionHandler(c.Resolve<GameStateMachine>().CurrentActiveState as MainMenuState));
 
             container.RegisterFactory(c => new MainMenuBootstrapper(
                 c.Resolve<UIRoot>(),
                 c.Resolve<MainMenuUIFactory>(),
                 c.Resolve<NavigationButtonsModel>(),
                 c.Resolve<NavigationButtonsViewModel>(),
-                c.Resolve<MainMenuState>()
+                c.Resolve<IMainMenuActionsHandler>()
             )).AsSingle();
         }
 

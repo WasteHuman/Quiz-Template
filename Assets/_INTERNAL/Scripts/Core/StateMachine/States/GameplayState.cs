@@ -1,7 +1,8 @@
 ﻿using Cysharp.Threading.Tasks;
+
 using Entry.Global;
+
 using UnityEngine;
-using Utils.DI;
 
 namespace Core.StateMachine.States
 {
@@ -9,13 +10,13 @@ namespace Core.StateMachine.States
     {
         private readonly SceneNavigatorService _sceneNavigatorService;
         private readonly GameStateMachine _gameStateMachine;
-        private readonly DIContainer _rootContainer;
+        private readonly StatesFactory _statesFactory;
 
-        public GameplayState(SceneNavigatorService sceneNavigatorService, GameStateMachine gameStateMachine, DIContainer rootContainer)
+        public GameplayState(SceneNavigatorService sceneNavigatorService, GameStateMachine gameStateMachine, StatesFactory statesFactory)
         {
             _sceneNavigatorService = sceneNavigatorService;
             _gameStateMachine = gameStateMachine;
-            _rootContainer = rootContainer;
+            _statesFactory = statesFactory;
         }
 
         public UniTask Enter()
@@ -32,7 +33,7 @@ namespace Core.StateMachine.States
         public async UniTask ExitToMainMenu()
         {
             await _sceneNavigatorService.LoadSceneAsync(SceneNames.MAIN_MENU);
-            await _gameStateMachine.ChangeState(_rootContainer.Resolve<MainMenuState>());
+            await _gameStateMachine.ChangeState(_statesFactory.CreateMainMenuState());
         }
     }
 }

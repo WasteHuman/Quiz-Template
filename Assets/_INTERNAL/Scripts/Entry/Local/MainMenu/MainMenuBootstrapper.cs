@@ -1,5 +1,5 @@
 ﻿using Core.Enums.ButtonActions;
-using Core.StateMachine.States;
+using Core.HandlersBase;
 
 using Cysharp.Threading.Tasks;
 
@@ -18,7 +18,7 @@ namespace Entry.Local.MainMenu
 
         private readonly UIRoot _uiRoot;
         private readonly MainMenuUIFactory _factory;
-        private readonly MainMenuState _state;
+        private readonly IMainMenuActionsHandler _actionHandler;
 
         private readonly NavigationButtonsModel _model;
         private readonly NavigationButtonsViewModel _viewModel;
@@ -28,20 +28,19 @@ namespace Entry.Local.MainMenu
             MainMenuUIFactory factory,
             NavigationButtonsModel model,
             NavigationButtonsViewModel viewModel,
-            MainMenuState state)
+            IMainMenuActionsHandler actionHandler)
         {
             _uiRoot = uiRoot;
             _factory = factory;
 
             _model = model;
             _viewModel = viewModel;
+            _actionHandler = actionHandler;
 
-            _state = state;
-
-            _model.Action.Where(action => action == MainMenuActions.Play)
-                .Subscribe(_ =>
+            _model.Action
+                .Subscribe(action =>
                 {
-                    _state.StartGame().Forget();
+                    _actionHandler.Handle(action);
                 }).AddTo(_disposables);
         }
 

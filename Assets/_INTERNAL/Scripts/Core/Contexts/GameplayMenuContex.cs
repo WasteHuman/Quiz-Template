@@ -1,4 +1,6 @@
 ﻿using Entry.Local.Core;
+using Entry.Local.GameplayMenu;
+
 using Utils.DI;
 
 namespace Core.Contexts
@@ -13,6 +15,11 @@ namespace Core.Contexts
         protected override void Run()
         {
 
+        }
+
+        protected override void OnDestroy()
+        {
+            Container.Resolve<GameplayBootstrapper>().Dispose();
         }
     }
 }

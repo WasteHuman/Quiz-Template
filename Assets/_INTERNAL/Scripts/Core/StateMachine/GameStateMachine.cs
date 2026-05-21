@@ -6,6 +6,8 @@ namespace Core.StateMachine
     {
         private IGameState _currentState;
 
+        public IGameState CurrentActiveState => _currentState;
+
         public async UniTask ChangeState(IGameState newState)
         {
             if (_currentState != null)
