@@ -1,5 +1,4 @@
-﻿using Core.Enums.ButtonActions;
-using Core.HandlersBase;
+﻿using Core.HandlersBase;
 
 using Cysharp.Threading.Tasks;
 
@@ -16,22 +15,22 @@ namespace Entry.Local.MainMenu
     {
         private readonly CompositeDisposable _disposables = new();
 
-        private readonly UIRoot _uiRoot;
         private readonly MainMenuUIFactory _factory;
         private readonly IMainMenuActionsHandler _actionHandler;
+        private readonly UIWindowService _windowService;
 
         private readonly NavigationButtonsModel _model;
         private readonly NavigationButtonsViewModel _viewModel;
 
         public MainMenuBootstrapper(
-            UIRoot uiRoot,
             MainMenuUIFactory factory,
             NavigationButtonsModel model,
             NavigationButtonsViewModel viewModel,
-            IMainMenuActionsHandler actionHandler)
+            IMainMenuActionsHandler actionHandler,
+            UIWindowService windowService)
         {
-            _uiRoot = uiRoot;
             _factory = factory;
+            _windowService = windowService;
 
             _model = model;
             _viewModel = viewModel;
@@ -48,17 +47,12 @@ namespace Entry.Local.MainMenu
         {
             _viewModel.BindModel(_model);
 
-            var mainMenuWindow = _factory.CreateMainMenuWindow();
-
-            _uiRoot.AttachScreenLayer(mainMenuWindow.transform);
-
             var navigationView = _factory.CreateNavigationButtonsView();
-
-            mainMenuWindow.AttachView(navigationView.transform);
 
             navigationView.BindViewModel(_viewModel);
 
-            mainMenuWindow.Show();
+            var mainMenuWindow = _windowService.Open<MainMenuWindow>();
+            mainMenuWindow.AttachView(navigationView.transform);
         }
 
         public void Dispose()

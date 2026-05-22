@@ -3,6 +3,7 @@
 using Core.GlobalState;
 using Core.StateMachine;
 using Core.StateMachine.States;
+
 using Cysharp.Threading.Tasks;
 
 using SO.Global;
@@ -21,7 +22,7 @@ namespace Entry.Global
     public class GameEntryPoint
     {
         private readonly DIContainer _rootContainer = new();
-        private readonly AssetPathsConfig _assetPathsConfig;
+        private readonly AssetDatabase _assetDatabase;
 
         private readonly SceneNavigatorService _sceneNavigatorService;
         private readonly GameStateMachine _stateMachine;
@@ -39,8 +40,11 @@ namespace Entry.Global
 
         private GameEntryPoint()
         {
-            _assetPathsConfig = ResourceLoader.LoadOrThrow<AssetPathsConfig>("Configs/Global/AssetPathsConfig");
-            var loadingViewPrefab = ResourceLoader.LoadOrThrow<UILoadingView>(_assetPathsConfig.AssetPaths.FirstOrDefault(asset => asset.Name == "UI Loading View").Path);
+            _assetDatabase = ResourceLoader.LoadOrThrow<AssetDatabase>("Configs/Global/AssetDatabase");
+            var loadingViewEntryPath = _assetDatabase.Assets.Where(entry => entry.AssetType == AssetType.CommonUI)
+                .SelectMany(entry => entry.AssetEntry)
+                .FirstOrDefault(asset => asset.Name == "UI Loading view").Path;
+            var loadingViewPrefab = ResourceLoader.LoadOrThrow<UILoadingView>(loadingViewEntryPath);
 
             _loadingView = UnityEngine.Object.Instantiate(loadingViewPrefab);
 
@@ -75,12 +79,12 @@ namespace Entry.Global
         private void RegisterGlobalServices()
         {
             _rootContainer.RegisterInstance(_loadingView);
-            _rootContainer.RegisterInstance(_assetPathsConfig);
+            _rootContainer.RegisterInstance(_assetDatabase);
 
             _rootContainer.RegisterFactory(
                 sls => new SceneLoaderService(sls.Resolve<UILoadingView>())).AsSingle();
             _rootContainer.RegisterFactory(
-                ggs => new GlobalGameState(_assetPathsConfig)).AsSingle();
+                ggs => new GlobalGameState(_assetDatabase)).AsSingle();
             _rootContainer.RegisterFactory(
                 gsm => new GameStateMachine()).AsSingle();
             _rootContainer.RegisterFactory(

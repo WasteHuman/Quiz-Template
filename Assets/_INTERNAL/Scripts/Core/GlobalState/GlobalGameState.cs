@@ -5,13 +5,13 @@ namespace Core.GlobalState
 {
     public class GlobalGameState
     {
-        private readonly AssetPathsConfig _assetPaths;
+        private readonly AssetDatabase _assetDatabase;
 
-        public AssetPathsConfig AssetPaths => _assetPaths;
+        public AssetDatabase AssetDatabase => _assetDatabase;
 
-        public GlobalGameState(AssetPathsConfig assetPaths)
+        public GlobalGameState(AssetDatabase assetDatabase)
         {
-            _assetPaths = assetPaths;
+            _assetDatabase = assetDatabase;
         }
 
         public async UniTask AsyncInitialization()

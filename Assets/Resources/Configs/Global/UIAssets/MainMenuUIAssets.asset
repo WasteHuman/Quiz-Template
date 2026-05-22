@@ -9,19 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1f62739870f637c4b8ddd3c1397266e5, type: 3}
-  m_Name: AssetPathsConfig
-  m_EditorClassIdentifier: Assembly-CSharp::SO.Global.AssetsPathsConfig
-  <AssetPaths>k__BackingField:
-  - Name: UI Loading View
-    Path: UI/Common/UILoadingView
-  - Name: UI Root
-    Path: UI/Common/UIRoot
+  m_Script: {fileID: 11500000, guid: 2d869af7bfa55294e9e3a7f8bcdded70, type: 3}
+  m_Name: MainMenuUIAssets
+  m_EditorClassIdentifier: Assembly-CSharp::SO.Global.AssetDatabaseByType
+  <AssetType>k__BackingField: 1
+  <AssetEntry>k__BackingField:
   - Name: Main menu buttons
     Path: UI/MainMenu/ButtonsBase
-  - Name: Main menu window
+  - Name: Main menu screen layer
     Path: UI/MainMenu/ScreenLayer
-  - Name: Popup window
+  - Name: Main menu popup layer
     Path: UI/MainMenu/PopupLayer
-  - Name: Overlay window
+  - Name: Main menu overlay layer
     Path: UI/MainMenu/OverlayLayer

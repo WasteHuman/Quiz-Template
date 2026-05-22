@@ -1,6 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
 using Entry.Global;
-using Utils.DI;
 
 namespace Core.StateMachine.States
 {

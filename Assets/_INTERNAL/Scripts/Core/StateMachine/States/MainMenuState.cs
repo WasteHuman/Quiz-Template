@@ -12,7 +12,10 @@ namespace Core.StateMachine.States
         private readonly GameStateMachine _gameStateMachine;
         private readonly StatesFactory _statesFactory;
 
-        public MainMenuState(SceneNavigatorService sceneNavigatorService, GameStateMachine gameStateMachine, StatesFactory statesFactory)
+        public MainMenuState(
+            SceneNavigatorService sceneNavigatorService,
+            GameStateMachine gameStateMachine,
+            StatesFactory statesFactory)
         {
             _sceneNavigatorService = sceneNavigatorService;
             _gameStateMachine = gameStateMachine;
